@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using SeleniumDemo.Solution;
 
 namespace SeleniumDemo;
@@ -13,6 +12,7 @@ public class GameState
     private int _mineCount;
     private readonly MineField _mineField;
     private bool _isFinished;
+
     public GameState(IWebDriver driver)
     {
         _driver = driver;
@@ -26,6 +26,7 @@ public class GameState
         Config.BoardHeight = _boarHeight;
         Config.BombCount = _mineCount;
     }
+
     private int ReadMineCount()
     {
         var mineCountDisplays = _driver.FindElements(By.CssSelector("[id*=top_area_mines]"));
@@ -38,6 +39,7 @@ public class GameState
             var parsedData = data.Where(char.IsDigit).ToArray();
             count += int.Parse(parsedId) * int.Parse(parsedData);
         }
+
         return count;
     }
 
@@ -47,6 +49,7 @@ public class GameState
         _mineField.Update();
         _isFinished = CheckGame();
     }
+
     private bool CheckGame()
     {
         IWebElement face = _driver.FindElement(By.Id("top_area_face"));
@@ -56,11 +59,13 @@ public class GameState
             Config.Lose++;
             return true;
         }
+
         if (value.Contains("win"))
         {
             Config.Win++;
             return true;
         }
+
         return false;
     }
 
@@ -74,6 +79,7 @@ public class GameState
         return new SolutionBoard
             { Board = _mineField.BoardState() };
     }
+
     public int NumberOfBombs()
     {
         return _mineCount;

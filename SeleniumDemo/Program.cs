@@ -1,12 +1,16 @@
-﻿using System;
-using SeleniumDemo;
+﻿using SeleniumDemo;
 using SeleniumDemo.Solution;
 
 var setup = new Setup();
+
 var gameState = setup.SelectDifficulty(1);
+
 var controller = gameState.Controller();
+
 controller.MakeFirsMove();
+
 gameState.Update();
+
 while (true)
 {
     var move = new MineBuster().NextMove(gameState.BoardState());

@@ -1,6 +1,5 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
-using SeleniumDemo.Solution;
 
 namespace SeleniumDemo;
 
@@ -41,11 +40,13 @@ public class Cell
             var value = status[^1] - 48;
             _status = value;
         }
+
         if (status.Contains("hd_flag"))
         {
             _status = -1;
         }
     }
+
     public int? Status()
     {
         return _status;
