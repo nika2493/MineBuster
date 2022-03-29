@@ -11,21 +11,14 @@ public class GameController
         _mineField = mineField;
     }
 
-    public void OpenCell(int x, int y)
+    private void OpenCell(int x, int y)
     {
         _mineField.OpenCell(x, y);
     }
 
-    public void PlantFlag(int x, int y)
+    private void PlantFlag(int x, int y)
     {
         _mineField.PlantFlag(x, y);
-    }
-
-    public void MakeFirsMove()
-    {
-        var randomX = new Random().Next(0, Config.BoardWith);
-        var randomY = new Random().Next(0, Config.BoardHeight);
-        _mineField.OpenCell(randomX, randomY);
     }
 
     public void MakeMove(Move move)

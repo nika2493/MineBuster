@@ -3,13 +3,9 @@ using SeleniumDemo.Solution;
 
 var setup = new Setup();
 
-var gameState = setup.SelectDifficulty(1);
+var gameState = setup.SelectDifficulty(2);
 
 var controller = gameState.Controller();
-
-controller.MakeFirsMove();
-
-gameState.Update();
 
 while (true)
 {

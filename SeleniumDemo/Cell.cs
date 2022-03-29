@@ -6,10 +6,10 @@ namespace SeleniumDemo;
 public class Cell
 {
     private readonly IWebDriver _driver;
+    private readonly IWebElement _webElement;
     private readonly int _x;
     private readonly int _y;
     private int? _status;
-    private IWebElement _webElement;
 
     public Cell(IWebDriver driver, IWebElement webElement, int x, int y)
     {

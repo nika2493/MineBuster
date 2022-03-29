@@ -4,44 +4,81 @@ public class MineBuster
 {
     private readonly int _boardHeight = Config.BoardHeight;
     private readonly int _boardWith = Config.BoardWith;
-    private Cell[,] _board;
+    private Cell[,] _board = null!;
     private int _numberOfMines = Config.BombCount;
 
     public List<Move> NextMove(SolutionBoard board)
     {
         _board = board.Board;
-        var result = new List<Move>();
-        var obviousBombs = GetObviousBombs();
-        foreach (var cell in obviousBombs)
-        {
-            result.Add(cell.Flag());
-        }
-
-        var obviousSafeClosedCells = GetObviousSafeClosedCells();
-        foreach (var cell in obviousSafeClosedCells)
-        {
-            result.Add(cell.Open());
-        }
-
+        var result = GetObviousMoves();
         if (result.Count > 0)
         {
             return result.DistinctBy(c => new { c.X, c.Y, c.Flag }).ToList();
+        }
+
+        var randomCells = GetCellWithEightNeighbouredClosedCell();
+        if (randomCells.Any())
+        {
+            var rng = new Random();
+            var cell = randomCells[rng.Next(randomCells.Count)];
+            return new List<Move> { cell.Open() };
         }
 
         result.Add(RandomMove());
         return result;
     }
 
-    private Move RandomMove()
+    private List<Cell> GetCellWithEightNeighbouredClosedCell()
     {
-        var rng = GetRandomCell();
-
-        while (!rng.IsClosed || rng.IsFlagged)
+        var cells = new List<Cell>();
+        foreach (var cell in _board)
         {
-            rng = GetRandomCell();
+            if (!cell.IsClosed)
+            {
+                continue;
+            }
+
+            var ngb = cell.GetNeighbours(_board);
+            if (ngb.Count(c => c.IsClosed) == 8)
+            {
+                cells.Add(cell);
+            }
         }
 
-        return rng.Open();
+        return cells;
+    }
+
+    private List<Move> GetObviousMoves()
+    {
+        var result = new List<Move>();
+        for (var x = 0; x < _boardWith; x++)
+        {
+            for (var y = 0; y < _boardHeight; y++)
+            {
+                var cell = _board[x, y];
+                if (cell.IsFlagged || cell.NeighbourBombCount == 0)
+                {
+                    continue;
+                }
+
+                result.AddRange(ObviousBombs(cell).Select(bomb => bomb.Flag()));
+                result.AddRange(ObviousSafeClosedCells(cell).Select(bomb => bomb.Open()));
+            }
+        }
+
+        return result;
+    }
+
+    private Move RandomMove()
+    {
+        var randomCell = GetRandomCell();
+
+        while (!randomCell.IsClosed || randomCell.IsFlagged)
+        {
+            randomCell = GetRandomCell();
+        }
+
+        return randomCell.Open();
     }
 
     private Cell GetRandomCell()
@@ -50,23 +87,6 @@ public class MineBuster
         var rngX = random.Next(0, _boardWith);
         var rngY = random.Next(0, _boardHeight);
         return _board[rngX, rngY];
-    }
-
-    private List<Cell> GetObviousSafeClosedCells()
-    {
-        var result = new List<Cell>();
-        for (var x = 0; x < _boardWith; x++)
-        {
-            for (var y = 0; y < _boardHeight; y++)
-            {
-                var cell = _board[x, y];
-                if (cell.IsFlagged || cell.NeighbourBombCount == 0) continue;
-                var cells = ObviousSafeClosedCells(cell);
-                result.AddRange(cells);
-            }
-        }
-
-        return result;
     }
 
     private List<Cell> ObviousSafeClosedCells(Cell cell)
@@ -80,35 +100,7 @@ public class MineBuster
             return result;
         }
 
-        foreach (var neighbour in closedNeighbours)
-        {
-            neighbour.BombChance = 0;
-            if (!neighbour.IsFlagged && neighbour.IsClosed)
-            {
-                result.Add(neighbour);
-            }
-        }
-
-        return result;
-    }
-
-    private List<Cell> GetObviousBombs()
-    {
-        var result = new List<Cell>();
-        for (var x = 0; x < _boardWith; x++)
-        {
-            for (var y = 0; y < _boardHeight; y++)
-            {
-                var cell = _board[x, y];
-                if (cell.IsFlagged || cell.NeighbourBombCount == 0)
-                {
-                    continue;
-                }
-
-                var cells = ObviousBombs(cell);
-                result.AddRange(cells);
-            }
-        }
+        result.AddRange(closedNeighbours.Where(neighbour => !neighbour.IsFlagged && neighbour.IsClosed));
 
         return result;
     }
@@ -123,14 +115,7 @@ public class MineBuster
             return result;
         }
 
-        foreach (var neighbour in closedNeighbours)
-        {
-            neighbour.BombChance = 100;
-            if (!neighbour.IsFlagged)
-            {
-                result.Add(neighbour);
-            }
-        }
+        result.AddRange(closedNeighbours.Where(neighbour => !neighbour.IsFlagged));
 
         return result;
     }

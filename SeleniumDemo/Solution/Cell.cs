@@ -2,9 +2,9 @@
 
 public class Cell
 {
-    public int X { get; set; }
+    public int X { get; init; }
 
-    public int Y { get; set; }
+    public int Y { get; init; }
 
     public bool IsFlagged { get; set; }
 
@@ -38,11 +38,11 @@ public class Cell
 
     public Move Open()
     {
-        return new Move() { X = X, Y = Y, Flag = false };
+        return new Move { X = X, Y = Y, Flag = false };
     }
 
     public Move Flag()
     {
-        return new Move() { X = X, Y = Y, Flag = true };
+        return new Move { X = X, Y = Y, Flag = true };
     }
 }

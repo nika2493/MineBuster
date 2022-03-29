@@ -6,7 +6,6 @@ namespace SeleniumDemo;
 public class MineField
 {
     private readonly Cell[,] _board;
-    private readonly IWebDriver _driver;
     private readonly int _height;
     private readonly int _with;
 
@@ -14,13 +13,12 @@ public class MineField
     {
         _with = with;
         _height = height;
-        _driver = driver;
         _board = new Cell[with, height];
         foreach (var cell in cells)
         {
             var x = int.Parse(cell.GetAttribute("data-x").Where(char.IsDigit).ToArray());
             var y = int.Parse(cell.GetAttribute("data-y").Where(char.IsDigit).ToArray());
-            _board[x, y] = new Cell(_driver, cell, x, y);
+            _board[x, y] = new Cell(driver, cell, x, y);
         }
     }
 
@@ -32,14 +30,16 @@ public class MineField
     public void OpenCell(int x, int y)
     {
         _board[x, y].Open();
-        Update();
     }
 
     public void Update()
     {
         foreach (var cell in _board)
         {
-            cell.Update();
+            if (cell.Status() is null)
+            {
+                cell.Update();
+            }
         }
     }
 
@@ -56,20 +56,20 @@ public class MineField
                     X = x,
                     Y = y,
                 };
-                if (browserCell.Status() is null)
+                var status = browserCell.Status();
+                switch (status)
                 {
-                    cell.IsClosed = true;
-                }
-                else
-                {
-                    if (browserCell.Status() is -1)
-                    {
+                    case null:
+                        cell.IsClosed = true;
+                        break;
+                    case -1:
                         cell.IsFlagged = true;
-                    }
-                    else
-                    {
-                        cell.NeighbourBombCount = (int)browserCell.Status();
-                    }
+                        cell.IsClosed = false;
+                        break;
+                    case >= 0:
+                        cell.NeighbourBombCount = (int)status;
+                        cell.IsClosed = false;
+                        break;
                 }
 
                 result[x, y] = cell;

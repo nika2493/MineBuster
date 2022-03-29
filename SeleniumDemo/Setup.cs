@@ -24,17 +24,17 @@ public class Setup
         return gameState;
     }
 
+    public GameState Restart()
+    {
+        var face = _driver.FindElement(By.Id("top_area_face"));
+        face.Click();
+        var gameState = new GameState(_driver);
+        return gameState;
+    }
+
     private void WaitForGameLoad(IWebDriver driver)
     {
         var waiter = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
         waiter.Until(ExpectedConditions.ElementExists(By.Id("top_area_face")));
-    }
-
-    public GameState Restart()
-    {
-        IWebElement face = _driver.FindElement(By.Id("top_area_face"));
-        face.Click();
-        var gameState = new GameState(_driver);
-        return gameState;
     }
 }
