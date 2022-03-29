@@ -33,7 +33,6 @@ public class Cell
 
     public void Update()
     {
-        _webElement = _driver.FindElement(By.Id($"cell_{_x}_{_y}"));
         var status = _webElement.GetAttribute("class");
         if (status.Contains("hd_type"))
         {
