@@ -34,7 +34,7 @@ public class Setup
 
     private void WaitForGameLoad(IWebDriver driver)
     {
-        var waiter = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+        var waiter = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
         waiter.Until(ExpectedConditions.ElementExists(By.Id("top_area_face")));
     }
 }

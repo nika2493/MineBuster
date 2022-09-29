@@ -3,7 +3,7 @@ using SeleniumDemo.Solution;
 
 var setup = new Setup();
 
-var gameState = setup.SelectDifficulty(2);
+var gameState = setup.SelectDifficulty(1);
 
 var controller = gameState.Controller();
 
